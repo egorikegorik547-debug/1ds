@@ -1,0 +1,735 @@
+
+@theme {
+  --font-pixel: "Press Start 2P", ui-monospace, monospace;
+  --font-body: "Pixelify Sans", ui-monospace, monospace;
+}
+
+html,
+body,
+#root,
+#__next {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #0d1a2a;
+}
+
+body {
+  font-family: "Pixelify Sans", ui-monospace, monospace;
+  color: #f3e3c0;
+  user-select: none;
+  -webkit-user-select: none;
+  font-size: 15px;
+}
+
+canvas {
+  image-rendering: pixelated;
+  display: block;
+}
+
+/* Слой интерфейса: сам прозрачен для мыши, а его прямые потомки (окна) — нет.
+   Элементы с классом pointer-events-none (utilities) переопределяют это правило. */
+@layer base {
+  .ui-layer > * {
+    pointer-events: auto;
+  }
+}
+
+img.pix {
+  image-rendering: pixelated;
+}
+
+/* ---------- Пиксельные панели ---------- */
+.px-panel {
+  position: relative;
+  background: linear-gradient(#3b291c, #2b1d14);
+  box-shadow:
+    0 0 0 2px #0f0906,
+    inset 0 0 0 2px #8a6038,
+    inset 0 0 0 4px #1d130c,
+    0 5px 0 2px rgba(0, 0, 0, 0.35);
+}
+
+.px-panel-dark {
+  background: linear-gradient(#251912, #1a110c);
+  box-shadow:
+    0 0 0 2px #0f0906,
+    inset 0 0 0 2px #5a3e26,
+    inset 0 0 0 4px #120b07,
+    0 5px 0 2px rgba(0, 0, 0, 0.35);
+}
+
+.px-inset {
+  background: #1a110c;
+  box-shadow:
+    inset 0 0 0 2px #0f0906,
+    inset 0 2px 0 2px rgba(0, 0, 0, 0.5);
+}
+
+.px-btn {
+  position: relative;
+  background: linear-gradient(#6a4a2c, #4a321e);
+  color: #f6e8c4;
+  box-shadow:
+    0 0 0 2px #0f0906,
+    inset 0 2px 0 0 #a8794a,
+    inset 0 -3px 0 0 #2e1d10,
+    0 3px 0 2px #0f0906;
+  transition: filter 0.08s, transform 0.08s;
+  cursor: pointer;
+}
+.px-btn:hover:not(:disabled) {
+  filter: brightness(1.18);
+}
+.px-btn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    0 0 0 2px #0f0906,
+    inset 0 2px 0 0 #a8794a,
+    inset 0 -3px 0 0 #2e1d10,
+    0 1px 0 2px #0f0906;
+}
+.px-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.px-btn.active {
+  background: linear-gradient(#e0a838, #b27a1c);
+  color: #2a1608;
+  box-shadow:
+    0 0 0 2px #0f0906,
+    inset 0 2px 0 0 #ffe08a,
+    inset 0 -3px 0 0 #7a4a0c,
+    0 3px 0 2px #0f0906;
+}
+.px-btn-green {
+  background: linear-gradient(#4a9a3a, #2f6a28);
+  box-shadow:
+    0 0 0 2px #0f0906,
+    inset 0 2px 0 0 #8ae070,
+    inset 0 -3px 0 0 #1c4a18,
+    0 3px 0 2px #0f0906;
+}
+.px-btn-gold {
+  background: linear-gradient(#f0b840, #c07a14);
+  color: #2a1608;
+  box-shadow:
+    0 0 0 2px #0f0906,
+    inset 0 2px 0 0 #fff0a8,
+    inset 0 -3px 0 0 #8a4e08,
+    0 3px 0 2px #0f0906;
+}
+.px-btn-red {
+  background: linear-gradient(#a84438, #78281e);
+  box-shadow:
+    0 0 0 2px #0f0906,
+    inset 0 2px 0 0 #e88a7a,
+    inset 0 -3px 0 0 #4a140c,
+    0 3px 0 2px #0f0906;
+}
+
+.px-title {
+  font-family: "Press Start 2P", monospace;
+  color: #ffe9a8;
+  text-shadow:
+    0 4px 0 #b8741c,
+    0 8px 0 #6a3a10,
+    4px 0 0 #1a0e06,
+    -4px 0 0 #1a0e06,
+    0 -4px 0 #1a0e06,
+    4px 4px 0 #1a0e06,
+    -4px 4px 0 #1a0e06,
+    0 12px 0 #1a0e06,
+    4px 8px 0 #1a0e06,
+    -4px 8px 0 #1a0e06;
+}
+
+.px-bar {
+  background: #120b07;
+  box-shadow: inset 0 0 0 2px #0f0906;
+  position: relative;
+  overflow: hidden;
+}
+.px-bar > i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(#ffe27a, #e0a020);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.5);
+  transition: width 0.2s linear;
+}
+
+.scroll-px::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+.scroll-px::-webkit-scrollbar-track {
+  background: #1a110c;
+}
+.scroll-px::-webkit-scrollbar-thumb {
+  background: #8a6038;
+  border: 2px solid #1a110c;
+}
+.scroll-px::-webkit-scrollbar-corner {
+  background: #1a110c;
+}
+
+@keyframes pulse-px {
+  0%,
+  100% {
+    filter: brightness(1);
+    transform: translateY(0);
+  }
+  50% {
+    filter: brightness(1.35);
+    transform: translateY(-2px);
+  }
+}
+.pulse-px {
+  animation: pulse-px 1s steps(2, end) infinite;
+}
+
+@keyframes blink-px {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+.blink-px {
+  animation: blink-px 1s steps(1, end) infinite;
+}
+
+@keyframes toast-in {
+  from {
+    transform: translateX(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+.toast-in {
+  animation: toast-in 0.25s steps(5, end);
+}
+
+@keyframes flame-px {
+  0%,
+  100% {
+    transform: scaleY(1) translateX(0);
+  }
+  33% {
+    transform: scaleY(1.12) translateX(1px);
+  }
+  66% {
+    transform: scaleY(0.94) translateX(-1px);
+  }
+}
+.flame-px {
+  animation: flame-px 0.45s steps(3, end) infinite;
+  transform-origin: bottom center;
+}
+
+@keyframes spin-px {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.spin-px {
+  animation: spin-px 1s steps(8, end) infinite;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.fade-up {
+  animation: fade-up 0.5s steps(6, end) both;
+}
+
+@keyframes tt-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 8px #ffb34766;
+    filter: brightness(1);
+  }
+  50% {
+    box-shadow: 0 0 22px #ffb347cc;
+    filter: brightness(1.2);
+  }
+}
+.tt-pulse {
+  animation: tt-pulse 1.6s ease-in-out infinite;
+}
+
+.px-range {
+  appearance: none;
+  height: 10px;
+  background: #120b07;
+  box-shadow: inset 0 0 0 2px #0f0906;
+  outline: none;
+  cursor: pointer;
+}
+.px-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 22px;
+  background: linear-gradient(#f0b840, #c07a14);
+  box-shadow: 0 0 0 2px #0f0906;
+}
+.px-range::-moz-range-thumb {
+  width: 16px;
+  height: 22px;
+  border: none;
+  border-radius: 0;
+  background: linear-gradient(#f0b840, #c07a14);
+  box-shadow: 0 0 0 2px #0f0906;
+}
+
+.px-card {
+  position: relative;
+  background: linear-gradient(#2e2016, #20150e);
+  box-shadow:
+    0 0 0 2px #0f0906,
+    inset 0 0 0 2px #5a3e26;
+  cursor: pointer;
+  transition: filter 0.08s, transform 0.08s;
+  text-align: left;
+}
+.px-card:hover {
+  filter: brightness(1.15);
+}
+.px-card.sel {
+  background: linear-gradient(#5a3e12, #3a2608);
+  box-shadow:
+    0 0 0 2px #0f0906,
+    inset 0 0 0 2px #ffcf6a,
+    0 0 18px #ffcf6a55;
+}
+
+@keyframes tt-px {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+.tt-pulse-px {
+  animation: tt-px 0.9s steps(2) infinite;
+}
+
+/* ───── обучение: подсветка кнопки HUD ───── */
+.tut-hl {
+  position: relative;
+  z-index: 3;
+  outline: 3px solid #ffe27a;
+  outline-offset: 2px;
+  animation: tut-pulse 0.9s steps(2, end) infinite;
+}
+.tut-hl::after {
+  content: '▼';
+  position: absolute;
+  top: -26px;
+  left: 50%;
+  margin-left: -8px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  line-height: 1;
+  color: #ffe27a;
+  text-shadow: 2px 2px 0 #0f0906, -1px -1px 0 #0f0906;
+  pointer-events: none;
+  animation: tut-bob 0.8s steps(2, end) infinite;
+}
+@keyframes tut-pulse {
+  0%,
+  100% {
+    outline-color: #ffe27a;
+    filter: brightness(1.05);
+  }
+  50% {
+    outline-color: #ff9a3a;
+    filter: brightness(1.3);
+  }
+}
+@keyframes tut-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* ───────── Читаемость мелкого пиксельного текста («д», «ы», «щ», «ж», «ф») ─────────
+   Кернинг и лигатуры выключены — у пиксельных шрифтов равномерная сетка;
+   синтетический «жирный» отключён — он слипал штрихи в кириллице. */
+@layer base {
+  body {
+    letter-spacing: 0.02em;
+    font-kerning: none;
+    font-variant-ligatures: none;
+    font-synthesis: none;
+    -webkit-font-smoothing: none;
+    font-smooth: never;
+    text-rendering: optimizeSpeed;
+  }
+  .font-pixel,
+  .font-pixel * {
+    letter-spacing: 0.07em;
+    word-spacing: 0.25em;
+    font-weight: 400;
+  }
+  [class*='text-[7px]'],
+  [class*='text-[8px]'],
+  [class*='text-[9px]'],
+  [class*='text-[10px]'],
+  [class*='text-[11px]'],
+  [class*='text-[12px]'],
+  [class*='text-[13px]'] {
+    letter-spacing: 0.045em;
+    text-shadow: 1px 1px 0 rgba(15, 9, 6, 0.92);
+  }
+  [class*='text-[11px]'],
+  [class*='text-[12px]'] {
+    word-spacing: 0.08em;
+  }
+}
+/* Press Start 2P чёткий только на кратных 8px: 7px и 9px размываются, подтягиваем к 8px */
+.font-pixel.text-\[7px\],
+.font-pixel.text-\[9px\] {
+  font-size: 8px;
+}
+.font-pixel {
+  text-shadow: 1px 1px 0 rgba(15, 9, 6, 0.9);
+}
+
+/* ───────── Кино-режим (скрытый HUD [H]) ───────── */
+.cine-bars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+.cine-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  background: #000;
+  transition: height 0.8s cubic-bezier(0.22, 0.8, 0.25, 1);
+  will-change: height;
+}
+.cine-bar.top {
+  top: 0;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+}
+.cine-bar.bot {
+  bottom: 0;
+  box-shadow: 0 -2px 14px rgba(0, 0, 0, 0.55);
+}
+.cine-bars.on .cine-bar {
+  height: clamp(26px, 8.5vh, 96px);
+}
+/* кнопка «показать» растворяется, чтобы не портить кадр; при наведении возвращается */
+.cine-hint {
+  animation: cine-hint-fade 5s ease forwards;
+}
+.cine-hint:hover {
+  animation: none;
+  opacity: 1;
+}
+@keyframes cine-hint-fade {
+  0%,
+  55% {
+    opacity: 0.75;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ═════════ Единый стиль дерева и пергамента: заклёпки, волокна, блики ═════════ */
+.px-panel,
+.px-panel-dark {
+  position: relative;
+  --rivet-hi: #fff2b8;
+  --rivet-a: #e8b44a;
+  --rivet-b: #a8721c;
+}
+.px-panel {
+  background:
+    repeating-linear-gradient(92deg, rgba(255, 224, 170, 0.035) 0 1px, transparent 1px 6px),
+    repeating-linear-gradient(87deg, rgba(0, 0, 0, 0.07) 0 1px, transparent 1px 11px),
+    repeating-linear-gradient(180deg, rgba(255, 210, 150, 0.025) 0 2px, transparent 2px 23px),
+    linear-gradient(#3b291c, #2b1d14);
+}
+.px-panel-dark {
+  --rivet-hi: #f6d6a8;
+  --rivet-a: #c98a52;
+  --rivet-b: #7a4a24;
+  background:
+    repeating-linear-gradient(92deg, rgba(255, 210, 150, 0.025) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(87deg, rgba(0, 0, 0, 0.08) 0 1px, transparent 1px 12px),
+    linear-gradient(#251912, #1a110c);
+}
+.px-panel::before,
+.px-panel-dark::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  pointer-events: none;
+  z-index: 2;
+  background-repeat: no-repeat;
+  background-image:
+    linear-gradient(var(--rivet-hi), var(--rivet-hi)), linear-gradient(var(--rivet-a), var(--rivet-b)), linear-gradient(#0f0906, #0f0906),
+    linear-gradient(var(--rivet-hi), var(--rivet-hi)), linear-gradient(var(--rivet-a), var(--rivet-b)), linear-gradient(#0f0906, #0f0906),
+    linear-gradient(var(--rivet-hi), var(--rivet-hi)), linear-gradient(var(--rivet-a), var(--rivet-b)), linear-gradient(#0f0906, #0f0906),
+    linear-gradient(var(--rivet-hi), var(--rivet-hi)), linear-gradient(var(--rivet-a), var(--rivet-b)), linear-gradient(#0f0906, #0f0906);
+  background-size:
+    2px 1px, 4px 4px, 6px 6px,
+    2px 1px, 4px 4px, 6px 6px,
+    2px 1px, 4px 4px, 6px 6px,
+    2px 1px, 4px 4px, 6px 6px;
+  background-position:
+    left 1px top 1px, left 1px top 1px, left 0 top 0,
+    right 3px top 1px, right 1px top 1px, right 0 top 0,
+    left 1px bottom 3px, left 1px bottom 1px, left 0 bottom 0,
+    right 3px bottom 3px, right 1px bottom 1px, right 0 bottom 0;
+}
+/* тонкий золотистый блик по верхней кромке */
+.px-panel::after {
+  content: '';
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  top: 4px;
+  height: 1px;
+  pointer-events: none;
+  z-index: 2;
+  background: linear-gradient(90deg, transparent, rgba(255, 226, 150, 0.4), transparent);
+}
+
+/* кнопки: мягкий подъём на 1px и золотистая вспышка верхней кромки */
+.px-btn {
+  transition: filter 0.1s, transform 0.1s;
+}
+.px-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+.px-btn:active:not(:disabled) {
+  transform: translateY(2px);
+}
+.px-btn::before {
+  content: '';
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  top: 2px;
+  height: 2px;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, #fff0b0 28%, #ffd860 72%, transparent);
+}
+.px-btn:hover:not(:disabled)::before {
+  animation: btn-glint 0.55s ease-out forwards;
+}
+@keyframes btn-glint {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+/* нехватка ресурса для постройки: иконка в верхней панели мягко пульсирует янтарно-красным */
+.res-lack {
+  animation: lack-chip 1.2s ease-in-out infinite;
+}
+.res-lack img {
+  animation: lack-icon 1.2s ease-in-out infinite;
+}
+@keyframes lack-icon {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgba(255, 120, 40, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 4px #ff7a2a) drop-shadow(0 0 2px #ff3a2a) saturate(1.35);
+  }
+}
+@keyframes lack-chip {
+  0%,
+  100% {
+    box-shadow: inset 0 0 0 2px #0f0906, inset 0 2px 0 2px rgba(0, 0, 0, 0.5), inset 0 0 0 4px rgba(255, 110, 40, 0);
+  }
+  50% {
+    box-shadow: inset 0 0 0 2px #0f0906, inset 0 2px 0 2px rgba(0, 0, 0, 0.5), inset 0 0 0 4px rgba(255, 120, 40, 0.55), 0 0 10px rgba(255, 110, 40, 0.35);
+  }
+}
+
+/* ═════════ Живая диорама главного меню ═════════ */
+.menu-sky {
+  contain: layout paint;
+}
+.menu-mist {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, rgba(190, 215, 232, 0.28), rgba(190, 215, 232, 0.08) 38%, transparent 62%),
+    radial-gradient(60% 30% at 20% 82%, rgba(255, 244, 220, 0.16), transparent 70%),
+    radial-gradient(50% 26% at 78% 74%, rgba(210, 232, 245, 0.18), transparent 70%);
+  animation: mist-drift 28s ease-in-out infinite alternate;
+}
+@keyframes mist-drift {
+  from {
+    transform: translateX(-2.5%) scaleY(1);
+    opacity: 0.8;
+  }
+  to {
+    transform: translateX(2.5%) scaleY(1.06);
+    opacity: 1;
+  }
+}
+.menu-cloud {
+  position: absolute;
+  left: 0;
+  width: 56px;
+  height: 12px;
+  background: rgba(255, 250, 235, 0.5);
+  image-rendering: pixelated;
+  box-shadow:
+    14px -8px 0 rgba(255, 250, 235, 0.5),
+    30px -5px 0 rgba(255, 250, 235, 0.5),
+    -10px 4px 0 rgba(255, 250, 235, 0.38),
+    22px 6px 0 rgba(235, 240, 250, 0.4),
+    6px 12px 0 rgba(150, 175, 210, 0.2),
+    40px 10px 0 rgba(150, 175, 210, 0.18);
+  animation: cloud-pass linear infinite;
+  will-change: transform;
+}
+@keyframes cloud-pass {
+  from {
+    transform: translateX(-20vw) scale(var(--s, 3));
+  }
+  to {
+    transform: translateX(125vw) scale(var(--s, 3));
+  }
+}
+.menu-bird {
+  position: absolute;
+  left: 0;
+  width: 12px;
+  height: 8px;
+  animation: bird-pass var(--d, 70s) linear infinite;
+  animation-delay: var(--delay, 0s);
+  opacity: 0;
+  will-change: transform;
+}
+.menu-bird > span {
+  position: absolute;
+  inset: 0;
+  animation: bird-bob 1.6s ease-in-out infinite alternate;
+}
+.menu-bird i {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+.menu-bird .up {
+  background:
+    linear-gradient(#1a1410, #1a1410) 0 0 / 3px 2px,
+    linear-gradient(#1a1410, #1a1410) 3px 2px / 2px 2px,
+    linear-gradient(#1a1410, #1a1410) 5px 3px / 2px 2px,
+    linear-gradient(#1a1410, #1a1410) 7px 2px / 2px 2px,
+    linear-gradient(#1a1410, #1a1410) 9px 0 / 3px 2px;
+  animation: bird-flap 0.5s steps(1, end) infinite;
+}
+.menu-bird .down {
+  background:
+    linear-gradient(#1a1410, #1a1410) 0 4px / 3px 2px,
+    linear-gradient(#1a1410, #1a1410) 3px 3px / 2px 2px,
+    linear-gradient(#1a1410, #1a1410) 5px 2px / 2px 2px,
+    linear-gradient(#1a1410, #1a1410) 7px 3px / 2px 2px,
+    linear-gradient(#1a1410, #1a1410) 9px 4px / 3px 2px;
+  animation: bird-flap 0.5s steps(1, end) infinite reverse;
+}
+@keyframes bird-flap {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes bird-bob {
+  from {
+    transform: translateY(-14px);
+  }
+  to {
+    transform: translateY(14px);
+  }
+}
+/* птица пролетает один раз за цикл (редко), остальное время — за кадром */
+@keyframes bird-pass {
+  0% {
+    opacity: 1;
+    transform: translateX(-8vw) scale(2);
+  }
+  22% {
+    opacity: 1;
+    transform: translateX(110vw) scale(2);
+  }
+  22.1%,
+  100% {
+    opacity: 0;
+    transform: translateX(110vw) scale(2);
+  }
+}
+
+/* ── Встроенные окна внутри больших разделов (Хозяйство / Люди и Двор / Мир и Война) ── */
+.embed > div:first-child {
+  position: static !important;
+  inset: auto !important;
+  background: transparent !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex: 1 1 auto;
+  min-height: 0;
+  z-index: auto !important;
+}
+.embed > div:first-child > .px-panel {
+  max-height: none !important;
+  max-width: none !important;
+  height: 100% !important;
+  width: 100% !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  padding: 0 !important;
+}
+.embed > div:first-child > .px-panel::before,
+.embed > div:first-child > .px-panel::after {
+  display: none !important;
+}
+.embed > div:first-child > .px-panel > div:first-child {
+  display: none !important;
+}
